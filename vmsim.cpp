@@ -64,7 +64,15 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 			if (frames.size() >= pages) {
 				frames.pop_back();
 			}
-			frames.push_back(ref);
+			// Create a new vector with the new ref in the front
+			std::vector<int> newFrames;
+			newFrames.push_back(ref);
+			for (int pageFrame: frames) {
+				if (pageFrame != ref) {
+					newFrames.push_back(pageFrame);
+				}
+			}
+			frames = newFrames;
 			printPages(ref, frames, pages, true);
 
 		}
