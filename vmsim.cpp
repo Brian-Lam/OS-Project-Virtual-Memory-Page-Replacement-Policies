@@ -1,5 +1,10 @@
 #include "vmsim.h"
 
+/*
+*
+*
+*/
+
 int main(int argc, char *argv[]) {
 	// Check usage
 	if (argc != 4) {
@@ -28,6 +33,12 @@ int main(int argc, char *argv[]) {
 
 	if (policy == "lru") {
 		lru_policy(pages, pageRequests);
+	} else if (policy == "fifo") {
+		fifo_policy(pages, pageRequests);
+	} else if (policy == "clock") {
+		clock_policy(pages, pageRequests);
+	} else if (policy == "opt") {
+		opt_policy(pages, pageRequests);
 	}
 }
 
