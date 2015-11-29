@@ -1,9 +1,17 @@
 #include "vmsim.h"
 
 /*
+*	Vmsim.cpp
 *
+* 	This is the source code file for the Virtual Memory Policy 
+* 	Simulator, written for the Operating Systems Course (CSE422)
+*	at Washington University in St Louis, which is different from
+*	University of Washington. 
+*
+*	Contributors: Brian Lam, Morgan Redding, Hunter Wills, Alex Tran
 *
 */
+
 
 int main(int argc, char *argv[]) {
 
@@ -41,15 +49,6 @@ int main(int argc, char *argv[]) {
 		clock_policy(pages, pageRequests);
 	} else if (policy == "opt") {
 		opt_policy(pages, pageRequests);
-	}
-	else if (policy == "opt") {
-		opt_policy(pages, pageRequests);
-	}
-	else if (policy == "fifo") {
-		fifo_policy(pages, pageRequests);
-	}
-	else if (policy == "clock") {
-		clock_policy(pages, pageRequests);
 	}
 }
 
