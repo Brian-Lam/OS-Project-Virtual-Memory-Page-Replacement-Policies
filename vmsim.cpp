@@ -35,9 +35,38 @@ int main(int argc, char *argv[]) {
 
 void opt_policy(int pages, std::vector<int>& pageRequests) {
 
+	const size_t maxNumberOfPrograms = 100;
+	const size_t n = pageRequests.size();
+
+	size_t** nextUse = new size_t*[maxNumberOfPrograms];
+	for (size_t i = 0; i < maxNumberOfPrograms; i++) {
+		nextUse[i] = nullptr;
+	}
+
+	std::vector< int > programs;
+	for (size_t i = n - 1; i < n; i--) {
+		if (nextUse[pageRequests[i]] == nullptr) {
+			nextUse[pageRequests[i]] = new size_t[n];
+			for (size_t j = i + 1; j < n; j++) {
+				nextUse[pageRequests[i]][j] = 4294967295;
+			}
+			programs.push_back(pageRequests[i]);
+		}
+		nextUse[pageRequests[i]][i] = size_t(-1);
+		for (size_t j = 0; j < programs.size(); j++) {
+			nextUse[programs[j]][i]++;
+		}
+	}
+
+	for (size_t i = 0; i < maxNumberOfPrograms; i++) {
+		if (nextUse[i] != nullptr) {
+			delete[] nextUse[i];
+		}
+	}
+	delete[] nextUse;
 }
 void fifo_policy(int pages,std::vector<int>& pageRequests) {
-
+	// TODO
 }
 void lru_policy(int pages, std::vector<int>& pageRequests) {
 	std::vector<int> frames;
@@ -58,6 +87,7 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 	}
 }
 void clock_policy(int pages, std::vector<int>& pageRequests) {
+	// TODO
 }
 
 void usage(){
