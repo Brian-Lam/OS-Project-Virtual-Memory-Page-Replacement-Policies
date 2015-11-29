@@ -47,8 +47,6 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 		if (i != frames.end ()) {
 			// Page hit
 			int nPosition = distance (frames.begin (), i);
-			std::cout << "Value "<< *i;
-			std::cout << " found in the vector at position: " << nPosition << std::endl;
 
 			// Refresh reference by moving it to the front of the vector
 			std::vector<int> newFrames;
@@ -59,6 +57,7 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 				}
 			}
 			frames = newFrames;
+			printPages(ref, frames, pages, false);
 		} else {
 			// Page miss
 			// Check if page frames are full
@@ -66,6 +65,8 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 				frames.pop_back();
 			}
 			frames.push_back(ref);
+			printPages(ref, frames, pages, true);
+
 		}
 	}
 }
@@ -107,6 +108,15 @@ std::vector<int> stringSplit(const std::string& text, char delimiter) {
 	return r;
 }
 
-void printPages(int request,std::vector<int>& pages) {
+void printPages(int request,std::vector<int>& pages, int numPages, bool pageFault) {
+	std::cout << request << ": [";
+	for (int cachedPage: pages) {
+		std::cout << cachedPage << "|";
+	}
+	if (pageFault) {
+		std::cout << "] F" << std::endl;
+	} else {
+		std::cout << "]" << std::endl;
+	}
 
 }
