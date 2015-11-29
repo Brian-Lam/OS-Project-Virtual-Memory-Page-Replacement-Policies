@@ -109,9 +109,21 @@ std::vector<int> stringSplit(const std::string& text, char delimiter) {
 }
 
 void printPages(int request,std::vector<int>& pages, int numPages, bool pageFault) {
+	if (request < 10) {
+		std::cout << " ";
+	}
 	std::cout << request << ": [";
 	for (int cachedPage: pages) {
+		if (cachedPage < 10) {
+			std::cout << " ";
+		}
 		std::cout << cachedPage << "|";
+	}
+	int emptySpots = numPages - pages.size();
+	if (emptySpots) {
+		for (int _i = 0; _i < emptySpots; _i++) {
+			std::cout << "  |";
+		}
 	}
 	if (pageFault) {
 		std::cout << "] F" << std::endl;
