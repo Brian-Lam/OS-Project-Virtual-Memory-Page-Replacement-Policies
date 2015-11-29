@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <stdexcept>
 
 void opt_policy(int pages, std::vector<int>& pageRequests);
 void fifo_policy(int pages, std::vector<int>& pageRequests);
