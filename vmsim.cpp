@@ -80,6 +80,7 @@ void opt_policy(const int pages, std::vector<int>& pageRequests) {
 	}
 
 	size_t* mem;
+	bool* pageFault = new bool[pageRequests.size()];
 	mem = new size_t[pages];
 	for (size_t i = 0; i < pages; i++) {
 		mem[i] = maxNumberOfPrograms;
@@ -87,21 +88,22 @@ void opt_policy(const int pages, std::vector<int>& pageRequests) {
 	for (size_t i = 0; i < pageRequests.size(); i++) {
 
 		// TODO
-		bool satisfied = false;
+		pageFault[i] = true;
 		size_t j;
 		for (j = 0; j < pages; j++) {
 			if (mem[j] == maxNumberOfPrograms) {
 				break;
 			}
 			if (mem[j] == pageRequests[i]) {
-				satisfied = true;
+				pageFault[i] = false;
 				break;
 			}
 		}
 
-		if (!satisfied) {
+		if (pageFault[i]) {
 			if (j < pages) {
 				mem[j] = pageRequests[i];
+				pageFault[i] = false;
 			}
 			else {
 				// find the program in mem[] with the biggest value in nextUse[]
@@ -136,16 +138,15 @@ void opt_policy(const int pages, std::vector<int>& pageRequests) {
 				}
 			}
 		}
-		std::cout << "]" << std::endl;
+		std::cout << "]";
+		if (pageFault[i]) {
+			std::cout << " F";
+		}
+		std::cout << std::endl;
 	}
 
 	for (size_t i = 0; i < maxNumberOfPrograms; i++) {
 		if (nextUse[i] != nullptr) {
-			// std::cout << i << ": ";
-			// for (size_t j = 0; j < n; j++) {
-			// 	std::cout << nextUse[i][j] << ", ";
-			// }
-			// std::cout << std::endl;
 			delete[] nextUse[i];
 		}
 	}
