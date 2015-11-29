@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 	}
 }
 
-void opt_policy(const int pages, std::vector<int>& pageRequests) {
+void opt_policy(const int numberOfPages, std::vector<int>& pageRequests) {
 
 	const size_t maxNumberOfPrograms = 100;
 	const size_t n = pageRequests.size();
@@ -63,6 +63,8 @@ void opt_policy(const int pages, std::vector<int>& pageRequests) {
 		nextUse[i] = nullptr;
 	}
 
+	// for every program p and every request t, set nextUse[p][t] to how
+	// many requests away the next request for "p" is
 	std::vector< int > programs;
 	for (size_t i = n - 2; i < n; i--) {
 		if (nextUse[pageRequests[i]] == nullptr) {
@@ -79,36 +81,46 @@ void opt_policy(const int pages, std::vector<int>& pageRequests) {
 		nextUse[pageRequests[i]][i] = 0;
 	}
 
+	// represents the frames in memory
+	// each mem[i] is program id
 	size_t* mem;
-	bool* pageFault = new bool[pageRequests.size()];
-	mem = new size_t[pages];
-	for (size_t i = 0; i < pages; i++) {
-		mem[i] = maxNumberOfPrograms;
+	mem = new size_t[numberOfPages];
+
+	// initialize all elements in mem[] to "empty"
+	const size_t empty = maxNumberOfPrograms;
+	for (size_t i = 0; i < numberOfPages; i++) {
+		mem[i] = empty;
 	}
+
+	// for every page request, satisfy it and print out the state of mem[]
 	for (size_t i = 0; i < pageRequests.size(); i++) {
 
-		// TODO
-		pageFault[i] = true;
+		// if the request is already in mem[], skip it
+		// otherwise indicate a page fault
+		bool pageFault = true;
 		size_t j;
-		for (j = 0; j < pages; j++) {
-			if (mem[j] == maxNumberOfPrograms) {
+		for (j = 0; j < numberOfPages; j++) {
+			if (mem[j] == empty) {
 				break;
 			}
 			if (mem[j] == pageRequests[i]) {
-				pageFault[i] = false;
+				pageFault = false;
 				break;
 			}
 		}
 
-		if (pageFault[i]) {
-			if (j < pages) {
+		if (pageFault) {
+			// if there is an empty slot in mem[], just use that
+			if (j < numberOfPages) {
 				mem[j] = pageRequests[i];
-				pageFault[i] = false;
+				pageFault = false;
 			}
+			// otherwise find the optimal program to replace
 			else {
 				// find the program in mem[] with the biggest value in nextUse[]
+				// replace this program's spot in mem[] with the current requesting program
 				size_t max_index = 0;
-				for (size_t j = 1; j < pages; j++) {
+				for (size_t j = 1; j < numberOfPages; j++) {
 					if (nextUse[mem[j]][i] > nextUse[mem[max_index]][i]) {
 						max_index = j;
 					}
@@ -117,6 +129,7 @@ void opt_policy(const int pages, std::vector<int>& pageRequests) {
 			}
 		}
 
+		// print out the state of mem[]
 		std::cout << pageRequests[i] << ": [";
 		if (std::to_string(mem[0]).size() == 1) {
 			std::cout << " " << std::to_string(mem[0]);
@@ -124,8 +137,8 @@ void opt_policy(const int pages, std::vector<int>& pageRequests) {
 		else {
 			std::cout << std::to_string(mem[0]);
 		}
-		for (size_t k = 1; k < pages; k++) {
-			if (mem[k] == maxNumberOfPrograms) {
+		for (size_t k = 1; k < numberOfPages; k++) {
+			if (mem[k] == empty) {
 				std::cout << "|  ";
 			}
 			else {
@@ -139,7 +152,7 @@ void opt_policy(const int pages, std::vector<int>& pageRequests) {
 			}
 		}
 		std::cout << "]";
-		if (pageFault[i]) {
+		if (pageFault) {
 			std::cout << " F";
 		}
 		std::cout << std::endl;
