@@ -96,6 +96,7 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 void clock_policy(int pages, std::vector<int>& pageRequests) {
     std::vector<int> cached;
     std::vector<int> usage;
+    int i = 0;
     for (auto it = pageRequests.begin(); it != pageRequests.end(); it++) {
         auto inCacheIterator = std::find(cached.begin(), cached.end(), *it);
         bool hadToReplace = false;
@@ -106,16 +107,17 @@ void clock_policy(int pages, std::vector<int>& pageRequests) {
             }
             else { //time to replace!
                 hadToReplace = true;
-                int i;
-                for (i = 0; i < cached.size(); i++) {
+                while (true) {
                     if (usage[i] == 0) { //found a page to replace
                         cached[i] = *it;
                         usage[i] = 1;
+                        i = (i + 1) % pages;
                         break;
                     }
                     else {
-                        usage[i] = 1;
+                        usage[i] = 0;
                     }
+                    i = (i + 1) % pages;
                 }
                 if (i == cached.size()) { //looping through no page was replaced so we must replace the first entry
                     cached[0] = *it;
@@ -182,12 +184,13 @@ void printPages(int request,std::vector<int>& pages, int numPages, bool pageFaul
 	}
 
 	std::cout << request << ": [";
+        int pageIndex = 0;
 	for (int cachedPage: pages) {
 		if (cachedPage < 10) {
 			// Pad with a space if page is 1 digit
 			std::cout << " ";
 		}
-		std::cout << cachedPage << "|";
+                std::cout << cachedPage << "|";
 	}
 
 	// Pad empty spots in memory
