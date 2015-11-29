@@ -153,7 +153,39 @@ void opt_policy(const int pages, std::vector<int>& pageRequests) {
 	delete[] nextUse;
 }
 void fifo_policy(int pages,std::vector<int>& pageRequests) {
-	// TODO
+   std::vector<int> frame;
+   int replaceIndex= 0;
+   for (std::vector<int>::iterator it=pageRequests.begin(); it != pageRequests.end(); ++it)
+   {
+      //print out page requested
+      if (std::find(frame.begin(), frame.end(), *it) != frame.end())
+      {
+         //hit, print out frame
+         printPages(*it, frame, pages, false);
+      }
+      else 
+      {
+         if (frame.size()< pages) 
+         {
+            //frame is not full
+            frame.push_back(*it);
+
+            //print out frame
+            printPages(*it, frame, pages, false);
+         }
+         else 
+         {
+            //page fault, replace a page in FIFO order
+            frame[replaceIndex++]= *it;
+            if (replaceIndex==pages){
+               replaceIndex=0;
+            }
+
+            //print out frame
+            printPages(*it, frame, pages, true);
+         }
+      }
+   }
 }
 void lru_policy(int pages, std::vector<int>& pageRequests) {
 	std::vector<int> frames;
