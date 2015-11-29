@@ -129,7 +129,10 @@ void opt_policy(const int numberOfPages, std::vector<int>& pageRequests) {
 		}
 
 		// print out the state of mem[]
-		std::cout << pageRequests[i] << ": [";
+		if (std::to_string(pageRequests[i]).size() == 1) {
+                    std::cout << " ";
+                }
+                std::cout << pageRequests[i] << ": [";
 		if (std::to_string(mem[0]).size() == 1) {
 			std::cout << " " << std::to_string(mem[0]);
 		}
