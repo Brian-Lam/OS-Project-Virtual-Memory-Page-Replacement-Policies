@@ -29,8 +29,6 @@ int main(int argc, char *argv[]) {
 	if (policy == "lru") {
 		lru_policy(pages, referenceFile);
 	}
-	
-
 }
 
 void opt_policy(int pages, std::ifstream& referenceFile){
@@ -48,11 +46,12 @@ void lru_policy(int pages, std::ifstream& referenceFile){
 		std::vector <int>::iterator i = find (frames.begin (),frames.end (), ref);
 
 		if (i != frames.end ()) {
+			// Page hit
 			int nPosition = distance (frames.begin (), i);
 			std::cout << "Value "<< *i;
 			std::cout << " found in the vector at position: " << nPosition << std::endl;
 		} else {
-			frames.push_back(i);
+			frames.push_back(ref);
 		}
 	}
 }
