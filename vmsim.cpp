@@ -57,6 +57,8 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 				}
 			}
 			frames = newFrames;
+
+			// Show status of the pages
 			printPages(ref, frames, pages, false);
 		} else {
 			// Page miss
@@ -73,6 +75,8 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 				}
 			}
 			frames = newFrames;
+
+			// Show status of the pages
 			printPages(ref, frames, pages, true);
 
 		}
@@ -116,23 +120,38 @@ std::vector<int> stringSplit(const std::string& text, char delimiter) {
 	return r;
 }
 
+/*
+*	Print the status of the pages in memory after a request. 
+*	@args:
+*		int request: The page number being requested
+*		std::vector<int>& pages: The vector representing pages already in memory
+*		int numPages: The capacity of pages in memory
+*		bool pageFault: True if there was a page fault for this request
+*/
 void printPages(int request,std::vector<int>& pages, int numPages, bool pageFault) {
+	// Pad with a space if request is 1 digit
 	if (request < 10) {
 		std::cout << " ";
 	}
+
 	std::cout << request << ": [";
 	for (int cachedPage: pages) {
 		if (cachedPage < 10) {
+			// Pad with a space if page is 1 digit
 			std::cout << " ";
 		}
 		std::cout << cachedPage << "|";
 	}
+
+	// Pad empty spots in memory
 	int emptySpots = numPages - pages.size();
 	if (emptySpots) {
 		for (int _i = 0; _i < emptySpots; _i++) {
 			std::cout << "  |";
 		}
 	}
+
+	// Show whether there was a page fault at this step
 	if (pageFault) {
 		std::cout << "] F" << std::endl;
 	} else {
