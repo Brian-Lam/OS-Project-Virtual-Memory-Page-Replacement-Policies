@@ -201,6 +201,7 @@ void fifo_policy(int pages,std::vector<int>& pageRequests) {
 }
 void lru_policy(int pages, std::vector<int>& pageRequests) {
 	std::vector<int> frames;
+	bool fault = false;
 
 	for (int ref: pageRequests) {
 		// Check if frames contains this reference
@@ -219,14 +220,16 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 				}
 			}
 			frames = newFrames;
+			fault = false;
 
 			// Show status of the pages
-			printPages(ref, frames, pages, false);
+			printPages(ref, frames, pages, fault);
 		} else {
 			// Page miss
 			// Check if page frames are full
 			if (frames.size() >= pages) {
 				frames.pop_back();
+				fault = true;
 			}
 			// Create a new vector with the new ref in the front
 			std::vector<int> newFrames;
@@ -239,7 +242,7 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 			frames = newFrames;
 
 			// Show status of the pages
-			printPages(ref, frames, pages, true);
+			printPages(ref, frames, pages, fault);
 
 		}
 	}
