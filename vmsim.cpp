@@ -1,5 +1,10 @@
 #include "vmsim.h"
 
+/*
+*
+*
+*/
+
 int main(int argc, char *argv[]) {
 
 	// Check usage
@@ -30,6 +35,12 @@ int main(int argc, char *argv[]) {
 
 	if (policy == "lru") {
 		lru_policy(pages, pageRequests);
+	} else if (policy == "fifo") {
+		fifo_policy(pages, pageRequests);
+	} else if (policy == "clock") {
+		clock_policy(pages, pageRequests);
+	} else if (policy == "opt") {
+		opt_policy(pages, pageRequests);
 	}
 	else if (policy == "opt") {
 		opt_policy(pages, pageRequests);
@@ -146,25 +157,85 @@ void fifo_policy(int pages,std::vector<int>& pageRequests) {
 void lru_policy(int pages, std::vector<int>& pageRequests) {
 	std::vector<int> frames;
 
-	for (int ref: frames) {
+	for (int ref: pageRequests) {
 		// Check if frames contains this reference
 		std::vector <int>::iterator i = find (frames.begin (),frames.end (), ref);
 
 		if (i != frames.end ()) {
 			// Page hit
 			int nPosition = distance (frames.begin (), i);
-			std::cout << "Value "<< *i;
-			std::cout << " found in the vector at position: " << nPosition << std::endl;
 
 			// Refresh reference by moving it to the front of the vector
+			std::vector<int> newFrames;
+			newFrames.push_back(ref);
+			for (int pageFrame: frames) {
+				if (pageFrame != ref) {
+					newFrames.push_back(pageFrame);
+				}
+			}
+			frames = newFrames;
+
+			// Show status of the pages
+			printPages(ref, frames, pages, false);
 		} else {
 			// Page miss
-			frames.push_back(ref);
+			// Check if page frames are full
+			if (frames.size() >= pages) {
+				frames.pop_back();
+			}
+			// Create a new vector with the new ref in the front
+			std::vector<int> newFrames;
+			newFrames.push_back(ref);
+			for (int pageFrame: frames) {
+				if (pageFrame != ref) {
+					newFrames.push_back(pageFrame);
+				}
+			}
+			frames = newFrames;
+
+			// Show status of the pages
+			printPages(ref, frames, pages, true);
+
 		}
 	}
 }
 void clock_policy(int pages, std::vector<int>& pageRequests) {
-	// TODO
+    std::vector<int> cached;
+    std::vector<int> usage;
+    for (auto it = pageRequests.begin(); it != pageRequests.end(); it++) {
+        auto inCacheIterator = std::find(cached.begin(), cached.end(), *it);
+        bool hadToReplace = false;
+        if (inCacheIterator == cached.end()) { //request is NOT contained in current cache
+            if (cached.size() < pages) { //room on the cache to just push current page
+                cached.push_back(*it);
+                usage.push_back(1);
+            }
+            else { //time to replace!
+                hadToReplace = true;
+                int i;
+                for (i = 0; i < cached.size(); i++) {
+                    if (usage[i] == 0) { //found a page to replace
+                        cached[i] = *it;
+                        usage[i] = 1;
+                        break;
+                    }
+                    else {
+                        usage[i] = 1;
+                    }
+                }
+                if (i == cached.size()) { //looping through no page was replaced so we must replace the first entry
+                    cached[0] = *it;
+                    usage[0] = 1;
+                }
+            }
+        }
+        else {
+            int indexInCache;
+            for (indexInCache = 0; cached[indexInCache] != *inCacheIterator; indexInCache++);
+            usage[indexInCache] = 1;
+        }
+        printPages(*it, cached, pages, hadToReplace);
+    }
 }
 
 void usage(){
@@ -202,8 +273,42 @@ std::vector<int> stringSplit(const std::string& text, char delimiter) {
 	return r;
 }
 
+/*
+*	Print the status of the pages in memory after a request. 
+*	@args:
+*		int request: The page number being requested
+*		std::vector<int>& pages: The vector representing pages already in memory
+*		int numPages: The capacity of pages in memory
+*		bool pageFault: True if there was a page fault for this request
+*/
+void printPages(int request,std::vector<int>& pages, int numPages, bool pageFault) {
+	// Pad with a space if request is 1 digit
+	if (request < 10) {
+		std::cout << " ";
+	}
 
+	std::cout << request << ": [";
+	for (int cachedPage: pages) {
+		if (cachedPage < 10) {
+			// Pad with a space if page is 1 digit
+			std::cout << " ";
+		}
+		std::cout << cachedPage << "|";
+	}
 
+	// Pad empty spots in memory
+	int emptySpots = numPages - pages.size();
+	if (emptySpots) {
+		for (int _i = 0; _i < emptySpots; _i++) {
+			std::cout << "  |";
+		}
+	}
 
+	// Show whether there was a page fault at this step
+	if (pageFault) {
+		std::cout << "] F" << std::endl;
+	} else {
+		std::cout << "]" << std::endl;
+	}
 
-
+}
