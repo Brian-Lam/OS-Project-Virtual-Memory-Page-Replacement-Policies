@@ -40,7 +40,21 @@ void fifo_policy(int pages, std::ifstream& referenceFile){
 
 }
 void lru_policy(int pages, std::ifstream& referenceFile){
+	std::vector<int> frames;
+	int ref;
 
+	while (referenceFile >> ref) {
+		// Check if frames contains this reference
+		std::vector <int>::iterator i = find (frames.begin (),frames.end (), ref);
+
+		if (i != frames.end ()) {
+			int nPosition = distance (frames.begin (), i);
+			std::cout << "Value "<< *i;
+			std::cout << " found in the vector at position: " << nPosition << std::endl;
+		} else {
+			frames.push_back(i);
+		}
+	}
 }
 void clock_policy(int pages, std::ifstream& referenceFile){
 }
