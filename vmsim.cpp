@@ -1,7 +1,5 @@
 #include "vmsim.h"
 
-
-
 int main(int argc, char *argv[]) {
 	// Check usage
 	if (argc != 4) {
@@ -41,9 +39,8 @@ void fifo_policy(int pages,std::vector<int>& pageRequests) {
 }
 void lru_policy(int pages, std::vector<int>& pageRequests) {
 	std::vector<int> frames;
-	int ref;
 
-	while (referenceFile >> ref) {
+	for (int ref: frames) {
 		// Check if frames contains this reference
 		std::vector <int>::iterator i = find (frames.begin (),frames.end (), ref);
 
@@ -52,7 +49,10 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 			int nPosition = distance (frames.begin (), i);
 			std::cout << "Value "<< *i;
 			std::cout << " found in the vector at position: " << nPosition << std::endl;
+
+			// Refresh reference by moving it to the front of the vector
 		} else {
+			// Page miss
 			frames.push_back(ref);
 		}
 	}
