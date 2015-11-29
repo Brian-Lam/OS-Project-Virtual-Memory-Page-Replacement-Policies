@@ -94,6 +94,42 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 	}
 }
 void clock_policy(int pages, std::vector<int>& pageRequests) {
+    std::vector<int> cached;
+    std::vector<int> usage;
+    for (auto it = pageRequests.begin(); it != pageRequests.end(); it++) {
+        auto inCacheIterator = std::find(cached.begin(), cached.end(), *it);
+        bool hadToReplace = false;
+        if (inCacheIterator == cached.end()) { //request is NOT contained in current cache
+            if (cached.size() < pages) { //room on the cache to just push current page
+                cached.push_back(*it);
+                usage.push_back(1);
+            }
+            else { //time to replace!
+                hadToReplace = true;
+                int i;
+                for (i = 0; i < cached.size(); i++) {
+                    if (usage[i] == 0) { //found a page to replace
+                        cached[i] = *it;
+                        usage[i] = 1;
+                        break;
+                    }
+                    else {
+                        usage[i] = 1;
+                    }
+                }
+                if (i == cached.size()) { //looping through no page was replaced so we must replace the first entry
+                    cached[0] = *it;
+                    usage[0] = 1;
+                }
+            }
+        }
+        else {
+            int indexInCache;
+            for (indexInCache = 0; cached[indexInCache] != *inCacheIterator; indexInCache++);
+            usage[indexInCache] = 1;
+        }
+        printPages(*it, cached, pages, hadToReplace);
+    }
 }
 
 void usage(){
