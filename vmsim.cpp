@@ -58,6 +58,38 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 	}
 }
 void clock_policy(int pages, std::vector<int>& pageRequests) {
+    std::vector<int> cached;
+    std::vector<int> usage;
+    for (auto it = pageRequests.begin(); it != pageRequests.end(); it++) {
+        int indexInCache = std::find(cached.begin(), cached.end(), *it);
+        if (indexInCache == v.end()) { //request is NOT contained in current cache
+            if (cached.size() < pages) { //room on the cache to just push current page
+                cached.push_back(*it);
+                usage.push_back(1);
+            }
+            else { //time to replace!
+                for (int i = 0; i < cached.size(); i++) {
+                    if (usage[i] == 0) { //found a page to replace
+                        cached[i] = *it;
+                        usage[i] = 1;
+                        break;
+                    }
+                    else {
+                        usage[i] = 1;
+                    }
+                }
+                if (i == cached.size()) { //looping through no page was replaced so we must replace the first entry
+                    cached[0] = *it;
+                    usage[0] = 1;
+                }
+            }
+        }
+        else {
+            usage[indexInCache] = 1;
+        }
+        
+    }
+    std::cout << "13: [ 1|12| 3|41]" << std::endl;
 }
 
 void usage(){
