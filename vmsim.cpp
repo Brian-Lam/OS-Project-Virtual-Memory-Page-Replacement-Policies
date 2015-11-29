@@ -1,4 +1,5 @@
 #include "vmsim.h"
+#include <map>
 
 /*
 *	Vmsim.cpp
@@ -203,50 +204,35 @@ void fifo_policy(int pages,std::vector<int>& pageRequests) {
    }
 }
 void lru_policy(int pages, std::vector<int>& pageRequests) {
-	std::vector<int> frames;
-
-	for (int ref: pageRequests) {
-		// Check if frames contains this reference
-		std::vector <int>::iterator i = find (frames.begin (),frames.end (), ref);
-
-		if (i != frames.end ()) {
-			// Page hit
-			int nPosition = distance (frames.begin (), i);
-
-			// Refresh reference by moving it to the front of the vector
-			std::vector<int> newFrames;
-			newFrames.push_back(ref);
-			for (int pageFrame: frames) {
-				if (pageFrame != ref) {
-					newFrames.push_back(pageFrame);
-				}
-			}
-			frames = newFrames;
-
-			// Show status of the pages
-			printPages(ref, frames, pages, false);
-		} else {
-			// Page miss
-			// Check if page frames are full
-			if (frames.size() >= pages) {
-				frames.pop_back();
-			}
-			// Create a new vector with the new ref in the front
-			std::vector<int> newFrames;
-			newFrames.push_back(ref);
-			for (int pageFrame: frames) {
-				if (pageFrame != ref) {
-					newFrames.push_back(pageFrame);
-				}
-			}
-			frames = newFrames;
-
-			// Show status of the pages
-			printPages(ref, frames, pages, true);
-
-		}
-	}
+    std::vector<int> cached;
+    std::map<int,int> usage;
+    for (int i = 0; i < pageRequests.size(); ++i) {
+        auto inCacheIterator = std::find(cached.begin(), cached.end(), pageRequests[i]);
+        bool hadToReplace = false;
+        if (inCacheIterator == cached.end()) { //request is NOT contained in current cache
+            if (cached.size() < pages) { //room on the cache to just push current page
+                cached.push_back(pageRequests[i]);
+                usage[pageRequests[i]] = i;
+            }
+            else { //time to replace!
+                hadToReplace = true;
+                int indexToReplace = 0;
+                for (int j = 1; j < cached.size(); ++j) {
+                    if (usage[cached[j]] < usage[cached[indexToReplace]]) {
+                        indexToReplace = j;
+                    }
+                }
+                cached[indexToReplace] = pageRequests[i];
+                usage[pageRequests[i]] = i;
+            }
+        }
+        else { //update the last use of this variable
+            usage[pageRequests[i]] = i;
+        }
+        printPages(pageRequests[i], cached, pages, hadToReplace);
+    }
 }
+
 void clock_policy(int pages, std::vector<int>& pageRequests) {
     std::vector<int> cached;
     std::vector<int> usage;
@@ -272,10 +258,6 @@ void clock_policy(int pages, std::vector<int>& pageRequests) {
                         usage[i] = 0;
                     }
                     i = (i + 1) % pages;
-                }
-                if (i == cached.size()) { //looping through no page was replaced so we must replace the first entry
-                    cached[0] = *it;
-                    usage[0] = 1;
                 }
             }
         }
