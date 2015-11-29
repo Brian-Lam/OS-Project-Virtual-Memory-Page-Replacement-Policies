@@ -40,7 +40,7 @@ void fifo_policy(int pages,std::vector<int>& pageRequests) {
 void lru_policy(int pages, std::vector<int>& pageRequests) {
 	std::vector<int> frames;
 
-	for (int ref: frames) {
+	for (int ref: pageRequests) {
 		// Check if frames contains this reference
 		std::vector <int>::iterator i = find (frames.begin (),frames.end (), ref);
 
@@ -51,8 +51,20 @@ void lru_policy(int pages, std::vector<int>& pageRequests) {
 			std::cout << " found in the vector at position: " << nPosition << std::endl;
 
 			// Refresh reference by moving it to the front of the vector
+			std::vector<int> newFrames;
+			newFrames.push_back(ref);
+			for (int pageFrame: frames) {
+				if (pageFrame != ref) {
+					newFrames.push_back(pageFrame);
+				}
+			}
+			frames = newFrames;
 		} else {
 			// Page miss
+			// Check if page frames are full
+			if (frames.size() >= pages) {
+				frames.pop_back();
+			}
 			frames.push_back(ref);
 		}
 	}
@@ -95,8 +107,6 @@ std::vector<int> stringSplit(const std::string& text, char delimiter) {
 	return r;
 }
 
+void printPages(int request,std::vector<int>& pages) {
 
-
-
-
-
+}
