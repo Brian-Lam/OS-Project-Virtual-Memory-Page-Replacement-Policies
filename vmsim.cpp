@@ -320,21 +320,31 @@ void printPages(int request,std::vector<int>& pages, int numPages, bool pageFaul
 	}
 
 	std::cout << request << ": [";
-        int pageIndex = 0;
-	for (int cachedPage: pages) {
-		if (cachedPage < 10) {
+    int pageIndex = 0;
+
+    for (std::vector<int>::iterator it = pages.begin() ; it != pages.end(); ++it) {
+	    int cachedPage = *it;
+	    if (cachedPage && cachedPage < 10) {
 			// Pad with a space if page is 1 digit
 			std::cout << " ";
 		}
-                std::cout << cachedPage << "|";
-	}
+		if (std::next(it) != pages.end()) {
+	        std::cout << cachedPage << "|";
+		} else {
+			std::cout << cachedPage;
+			if (pages.size() < numPages) {
+				std::cout << "|";
+			}
+		}
+    }
 
 	// Pad empty spots in memory
 	int emptySpots = numPages - pages.size();
 	if (emptySpots) {
-		for (int _i = 0; _i < emptySpots; _i++) {
+		for (int _i = 1; _i < emptySpots; _i++) {
 			std::cout << "  |";
 		}
+		std::cout << "  ";
 	}
 
 	// Show whether there was a page fault at this step
