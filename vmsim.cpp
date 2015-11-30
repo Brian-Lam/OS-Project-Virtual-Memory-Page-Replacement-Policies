@@ -349,7 +349,7 @@ void printPages(int request,std::vector<int>& pages, int numPages, bool pageFaul
 
 	// Show whether there was a page fault at this step
 	if (pageFault) {
-		std::cout << "] F" << std::endl;
+		std::cout << "]  F" << std::endl;
 	} else {
 		std::cout << "]" << std::endl;
 	}
