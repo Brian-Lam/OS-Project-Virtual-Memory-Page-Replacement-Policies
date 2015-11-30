@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 	std::string filename = argv[6];
 
 	// Will Morgan see this?
-	bool MorgansMomHasGotItGoingOn = false;
+	bool morgansMomHasGotItGoingOn = false;
 
 	// File Stream
 	std::ofstream file;
@@ -37,6 +37,8 @@ int main(int argc, char* argv[]) {
 			refs.push_back(ws[rand() % ws.size()]);
 		}
 	}
+
+
 	file.close();
 
 }
