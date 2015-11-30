@@ -39,6 +39,13 @@ int main(int argc, char* argv[]) {
 	}
 
 
+	std::string text = "";
+	for (size_t i = 0; i < refs.size(); i++) {
+		text += std::to_string(refs[i]);
+		text += '\n';
+	}
+	file << text;
+
 	file.close();
 
 }
