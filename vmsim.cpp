@@ -1,5 +1,4 @@
 #include "vmsim.h"
-#include <map>
 
 /*
 *	Vmsim.cpp

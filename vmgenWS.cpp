@@ -9,15 +9,36 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Parse arguments
-	int ws_size = stoi(argv[1]);
-	int lower_bound = stoi(argv[2]);
-	int upper_bound = stoi(argv[3]);
-	int range = stoi(argv[4]);
-	int sequence_length = stoi(argv[5]);
-	std::string filename = stoi(argv[6]);
+	int ws_size = std::stoi(argv[1]);
+	int lower_bound = std::stoi(argv[2]);
+	int upper_bound = std::stoi(argv[3]);
+	int range = std::stoi(argv[4]);
+	int sequence_length = std::stoi(argv[5]);
+	std::string filename = argv[6];
 
-	// Will Hunter see this?
-	bool huntersMomHasGotItGoingOn = true;
+	// Will Morgan see this?
+	bool bryansMomHasGotItGoingOn = false;
+
+	// File Stream
+	std::ofstream file;
+    file.open(filename);
+
+	int random_number;
+	std::vector<int> refs; 
+	while (refs.size() < sequence_length) {
+
+		int ws_nums = lower_bound  + (rand() % (upper_bound - lower_bound));
+		std::vector<int> ws;
+		int i;
+		for (i = 0; i < ws_size; i++) {
+			ws.push_back(rand() % range);
+		}
+		for (i = 0; i < ws_nums && refs.size() < sequence_length; i++) {
+			refs.push_back(ws[rand() % ws.size()]);
+		}
+	}
+	file.close();
+
 }
 
 void usage() {
