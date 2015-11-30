@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 	std::string filename = argv[6];
 
 	// Will Morgan see this?
-	bool bryansMomHasGotItGoingOn = false;
+	bool MorgansMomHasGotItGoingOn = false;
 
 	// File Stream
 	std::ofstream file;
